@@ -1,11 +1,11 @@
 import scrapy
 
-class JobSpider(scrapy.Spider):
-    name = "jobspider"
+class JobSpider4(scrapy.Spider):
+    name = "jobspider4"
     allowed_domains = []
 
     def __init__(self, start_url=None, output_file=None, *args, **kwargs):
-        super(JobSpider, self).__init__(*args, **kwargs)
+        super(JobSpider4, self).__init__(*args, **kwargs)
         self.start_urls = [start_url]
         self.output_file = output_file
 

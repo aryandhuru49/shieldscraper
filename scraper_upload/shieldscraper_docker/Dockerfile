@@ -1,14 +1,16 @@
 FROM python:3.9-slim
 
-# Install packages
-RUN pip install scrapy boto3
+# Install necessary Python packages
+RUN pip install scrapy boto3 twisted
 
-# Copy function code
+# Copy project files
 COPY fargate_handler.py .
 COPY job_spider.py .
+COPY job_spider_2.py .
+COPY job_spider_3.py .
+COPY job_spider_4.py .
+COPY job_spider_5.py .
 
-# Set the CMD properly for Fargate 
+
+# Set the command to run the handler
 CMD ["python", "fargate_handler.py"]
-
-
-

@@ -1,0 +1,15 @@
+{
+  "fileLocations": [
+    {
+      "URIs": [
+        "s3://iu-sheild-scraper-bucket/cleaned/ndjson/soccer_stats_cleaned_ndjson.json"
+      ]
+    }
+  ],
+  "globalUploadSettings": {
+    "format": "JSON",
+    "jsonOptions": {
+      "multiline": false
+    }
+  }
+}
