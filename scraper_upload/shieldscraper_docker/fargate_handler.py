@@ -10,7 +10,6 @@ from job_spider_3 import JobSpider3
 from job_spider_4 import JobSpider4
 from job_spider_5 import JobSpider5
 
-# Setup S3 client
 s3 = boto3.client('s3')
 RAW_BUCKET = os.environ['RAW_BUCKET']
 
@@ -23,14 +22,13 @@ output_files = [
 ]
 
 start_urls = [
-    "https://www.espn.com/soccer/table/_/league/",
-    "https://www.espn.com/soccer/standings/_/league/esp.1",
     "https://www.espn.com/soccer/standings/_/league/eng.1",
+    "https://www.espn.com/soccer/standings/_/league/fra.1",
+    "https://www.espn.com/soccer/standings/_/league/esp.1",
     "https://www.espn.com/soccer/standings/_/league/ita.1",
     "https://www.espn.com/soccer/standings/_/league/ger.1",
 ]
 
-# Upload file to S3
 def upload_to_s3(local_file, s3_key):
     with open(local_file, "rb") as f:
         s3.put_object(
@@ -39,22 +37,32 @@ def upload_to_s3(local_file, s3_key):
             Body=f.read(),
             ContentType='application/json'
         )
-    print(f"✅ Uploaded {s3_key} to S3!")
+    print(f"Uploaded {s3_key} to S3!")
 
 @defer.inlineCallbacks
 def crawl():
-    runner = CrawlerRunner(settings={
-        'FEEDS': {file_name: {'format': 'json', 'overwrite': True} for file_name in output_files},
-        'LOG_ENABLED': True
-    })
-
-    yield runner.crawl(JobSpider, start_url=start_urls[0], output_file=output_files[0])
-    yield runner.crawl(JobSpider2, start_url=start_urls[1], output_file=output_files[1])
-    yield runner.crawl(JobSpider3, start_url=start_urls[2], output_file=output_files[2])
-    yield runner.crawl(JobSpider4, start_url=start_urls[3], output_file=output_files[3])
-    yield runner.crawl(JobSpider5, start_url=start_urls[4], output_file=output_files[4])
-
+    runner = CrawlerRunner()
+    
+    spiders = [
+        (JobSpider, start_urls[0], output_files[0]),
+        (JobSpider2, start_urls[1], output_files[1]),
+        (JobSpider3, start_urls[2], output_files[2]),
+        (JobSpider4, start_urls[3], output_files[3]),
+        (JobSpider5, start_urls[4], output_files[4]),
+    ]
+    
+    for spider_cls, start_url, output_file in spiders:
+        settings = {
+            'FEEDS': {
+                output_file: {'format': 'json', 'overwrite': True}
+            },
+            'LOG_ENABLED': True
+        }
+        runner = CrawlerRunner(settings)
+        yield runner.crawl(spider_cls, start_url=start_url, output_file=output_file)
+    
     reactor.stop()
+
 
 if __name__ == "__main__":
     try:
@@ -64,7 +72,7 @@ if __name__ == "__main__":
         for file_name in output_files:
             upload_to_s3(file_name, file_name)
 
-        print("🎯 All leagues scraped and uploaded successfully!")
+        print("All leagues scraped and uploaded successfully!")
 
     except Exception as e:
         print(str(e))
