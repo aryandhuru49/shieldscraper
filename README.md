@@ -11,6 +11,10 @@ ShieldScraper is an automated, secure, and scalable cloud-based data engineering
 - Shivali Mate
 
 ---
+## Architecture 
+<img width="1653" height="889" alt="image" src="https://github.com/user-attachments/assets/735d8623-b85f-4af6-9775-d1d3f5da2f0a" />
+
+---
 
 ## Folder Structure
 
